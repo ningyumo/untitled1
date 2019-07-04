@@ -1,0 +1,18 @@
+div.login_row {
+    margin-top: 80px;
+}
+
+div.login_picture {
+    background-image: url("../img/login.jpg");
+    background-repeat: no-repeat;
+    width: 816px;
+    height: 510px;
+    color: black;
+}
+div.login_form_row {
+    padding-top: 92px;
+}
+
+.socialaccount_providers {
+    list-style: none;
+}
