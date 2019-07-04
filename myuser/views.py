@@ -11,7 +11,7 @@ class MyRegisterForm(FormView):
 
     def form_valid(self, form):
         username = form.cleaned_data['username']
-        password = form.cleaned_data['password']
+        password = form.cleaned_data['password_1']
         email = form.cleaned_data['email']
         user = User.objects.create_user(username=username, password=password, email=email)
         return super().form_valid(form)
