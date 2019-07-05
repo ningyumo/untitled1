@@ -20,8 +20,8 @@
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="{% url 'home' %}">首页 <span class="sr-only">(current)</span></a></li>
-                    <li><a href="#">博客</a></li>
+                    <li  class="{% block home_status %}{% endblock %}"><a href="{% url 'home' %}">首页 <span class="sr-only">(current)</span></a></li>
+                    <li class="{% block blog_status %}{% endblock %}"><a href="#">博客</a></li>
                     {% comment %}
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
@@ -40,20 +40,20 @@
                 <ul class="nav navbar-nav navbar-right">
                     {# <li><a href="#">Link</a></li> #}
                     {% if request.user.is_authenticated %}
-                        <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">游客 <span class="caret"></span></a>
+                        <li id="was_login" class="dropdown">
+                        <a id="username" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ request.user.username }} <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="#">个人中心</a></li>
                             {% if request.user.is_superuser %}
                                 <li><a href="http://localhost:8000/admin/">后台管理</a></li>
                             {% endif %}
                             <li role="separator" class="divider"></li>
-                            <li><a href="#">退出</a></li>
+                            <li id="logout"><a href="#">退出</a></li>
                         </ul>
                         </li>
                     {% else %}
-                        <li><a href="{% url 'account:register' %}?next={{ request.path }}">注册</a></li>
-                        <li><a href="#">登陆</a></li>
+                        <li class="{% block register_status %}{% endblock %}"><a href="{% url 'account:register' %}?next={{ request.get_full_path }}">注册</a></li>
+                        <li class="{% block login_status %}{% endblock %}"><a href="{% url 'account:login' %}?next={{ request.get_full_path }}">登陆</a></li>
                     {% endif %}
                 </ul>
             </div><!-- /.navbar-collapse -->
@@ -112,5 +112,10 @@
     </script>
     <script type="text/javascript" src="{% static "bootstrap-3.3.7/js/bootstrap.min.js" %}">
     </script>
+    <script type="text/javascript" src="{% static "js/base.js" %}">
+    </script>
+    {% block extra_js %}
+
+    {% endblock %}
 </body>
 </html>

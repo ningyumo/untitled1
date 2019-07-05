@@ -11,3 +11,11 @@ class Profile(models.Model):
             return self.nick_name
         else:
             return self.user.username
+
+
+class VerifyCode(models.Model):
+    email = models.EmailField()
+    verify_code = models.CharField(max_length=6)
+    used = models.BooleanField(default=False)
+
+

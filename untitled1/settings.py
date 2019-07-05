@@ -127,8 +127,8 @@ EMAIL_HOST_USER = '653056889@qq.com'
 EMAIL_HOST_PASSWORD = 'zpbcunkhbgkgbcfa'
 EMAIL_SUBJECT_PREFIX = ['我的博客']
 EMAIL_USE_TLS = True
-EMAIL_FROM = '653056889@qq.com'
-DEFAULT_FROM_EMAIL = '653056889@qq.com'
+# EMAIL_FROM = '653056889@qq.com'
+# DEFAULT_FROM_EMAIL = '653056889@qq.com'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
@@ -137,3 +137,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
     ]
+
+# Sessions设置
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+SESSION_COOKIE_AGE = 600

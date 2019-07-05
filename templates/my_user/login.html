@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block title %}
-    注册
+    登陆
 {% endblock %}
 
-{% block register_status %}
+{% block login_status %}
     active
 {% endblock %}
 
@@ -14,10 +13,10 @@
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3>注册</h3>
+                    <h3>登陆</h3>
                 </div>
                 <div class="panel-body">
-                    <form action="{% url 'account:register' %}" method="post">
+                    <form action="{% url 'account:login' %}" method="post">
                         {% csrf_token %}
                         {% for field in form %}
                             <div class="form-group">
@@ -27,15 +26,12 @@
                               </div>
                         {% endfor %}
                         <div class="text-danger">{{ form.non_field_errors }}</div>
-                        <button class="btn btn-default pull-left" id="send_email">点击发送验证码</button>
                         <input type="submit" value="提交" class="pull-right">
                 </div>
             </div>
         </div>
     </div>
-{% endblock %}
+    <form action="{% url 'account:register' %}">
 
-{% block extra_js %}
-    <script type="text/javascript" src="{% static "js/myuser/register.js" %}">
-    </script>
+    </form>
 {% endblock %}
