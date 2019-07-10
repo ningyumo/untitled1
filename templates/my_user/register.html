@@ -17,18 +17,19 @@
                     <h3>注册</h3>
                 </div>
                 <div class="panel-body">
-                    <form action="{% url 'account:register' %}" method="post">
+                    <form action="" method="post">
                         {% csrf_token %}
-                        {% for field in form %}
+                        {% for field in form.visible_fields %}
                             <div class="form-group">
                                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                                 {{ field }}
                                 <div class="text-danger">{{ field.errors }}</div>
                               </div>
                         {% endfor %}
-                        <div class="text-danger">{{ form.non_field_errors }}</div>
+                        <div id="form_non_field_errors" class="text-danger">{{ form.non_field_errors }}</div>
                         <button class="btn btn-default pull-left" id="send_email">点击发送验证码</button>
                         <input type="submit" value="提交" class="pull-right">
+                    </form>
                 </div>
             </div>
         </div>

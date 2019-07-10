@@ -10,7 +10,7 @@ $(document).ready(function () {
             type: 'get',
             data: {
                 'to': email,
-                'action': 'register',
+                'action': 'find_password',
             },
             cache: 'false',
             success: function () {
