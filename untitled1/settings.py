@@ -38,7 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myuser',
-    'blog'
+    'blog',
+    'comment',
+    'like',
+    'collection',
 ]
 
 
@@ -118,7 +121,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+# USE_TZ = True
 
 # 邮件配置
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

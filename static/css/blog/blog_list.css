@@ -1,0 +1,25 @@
+.tags_first{
+    background-color: #f5f5f5;
+    width: 170px;
+    top: 83px;
+    left: 115px;
+    border: #ddd 1px solid;
+    border-radius: 4px;
+}
+
+.tags_second{
+    background-color: #f5f5f5;
+    width: 170px;
+    position: fixed;
+    top: 0;
+    left: 121px;
+    border: #ddd 1px solid;
+    border-radius: 4px
+}
+#tags ul li{
+    text-align: center;
+}
+
+.blog_information {
+    margin-top: 10px;
+}

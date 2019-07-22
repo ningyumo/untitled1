@@ -1,3 +1,22 @@
 .information {
     margin-top: 10px;
 }
+
+.comment_information {
+    font-size: 0.5em;
+
+}
+
+.comment_ceater {
+    color: #ee6583;
+}
+
+.comment_content{
+    text-indent: 2em;
+}
+
+.go_top {
+    position: fixed;
+    top: 500px;
+    left: 200px;
+}

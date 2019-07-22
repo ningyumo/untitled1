@@ -1,5 +1,6 @@
 body {
     background-color: #f5f5f5;
+    /*position: relative;*/
 }
 
 div#body_content {
@@ -8,5 +9,5 @@ div#body_content {
 
 div#content {
     margin-top: 10px;
-    min-height: 766px;
+    /*min-height: 600px;*/
 }

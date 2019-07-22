@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block blog_status %}
+    active
+{% endblock %}
+
+{% block other_css %}
+    <link rel="stylesheet" href="{% static 'css/blog/blog_list.css' %}">
+{% endblock %}
+
+{% block title %}
+    博客
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-md-2">
+            <div id="tags" class="tags_first">
+                <ul class="nav nav-pills nav-stacked">
+                    {% for blog_tag in blog_tags %}
+                        <li role="presentation"><a href="{% url 'blog:blog_list_with_type' blog_tag.pk %}" class="tag_name"><h4>{{ blog_tag.name }}</h4></a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <ul class="list-group">
+                {% for blog in blog_list %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <a href="{% url 'blog:blog_detail' blog.pk %}"><h3 class="panel-title">{{ blog.title }}</h3></a>
+                            <div class="blog_information">
+                                <span class="glyphicon glyphicon-user" title="作者">&nbsp;{{ blog.creater }}&nbsp;</span>
+                                <span class="glyphicon glyphicon-tags" title="标签">
+                                    {% for tag in blog.tags.all %}
+                                        {% if forloop.last %}
+                                            <a href="{% url 'blog:blog_list_with_type' tag.pk %}">{{ tag.name }}</a>&nbsp;
+                                        {% else %}
+                                            <a href="{% url 'blog:blog_list_with_type' tag.pk %}">{{ tag.name }}</a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span class="glyphicon glyphicon-time" title="发表时间">&nbsp;{{ blog.created_time|date:'Y-m-d H:i:s' }}</span>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            {{ blog.introduction }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </ul>
+            {# 分页 #}
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li>
+                        {% if page_obj.has_previous %}
+                            <a href="{% url 'blog:blog_list'%}?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        {% else %}
+                            <span aria-hidden="true">&laquo;</span>
+                        {% endif %}
+
+                    </li>
+
+                    {% for num in paginator.page_range %}
+                        {% if num == page_obj.number %}
+                            <li class="active"><a href="{% url 'blog:blog_list' %}?page={{ num }}">{{ num }}</a></li>
+                        {% else %}
+                            <li><a href="{% url 'blog:blog_list' %}?page={{ num }}">{{ num }}</a></li>
+                        {% endif %}
+
+                    {% endfor %}
+
+                    <li>
+                        {% if page_obj.has_next %}
+                            <a href="{% url 'blog:blog_list' %}?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        {% else %}
+                            <span aria-hidden="true" >&raquo;</span>
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="col-md-3">
+            111
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript" src="{% static "js/blog/blog_list.js" %}">
+    </script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+

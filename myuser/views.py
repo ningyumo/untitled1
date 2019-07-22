@@ -8,11 +8,14 @@ from django.http import JsonResponse
 from django.core.mail import send_mail
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
 import string
 import random
 
 from .forms import RegisterForm, LoginForm, ChangeNickNameForm, ChangeEmailForm, ChangePasswordForm, FindPasswordForm
 from .models import VerifyCode, Profile
+from collection.models import Collection
+from comment.models import Comment
 
 
 # 注册
@@ -115,12 +118,30 @@ class ProfileView(TemplateView):
         profile = self.model.objects.get(user=self.request.user)
         return {'profile': profile}
 
+    # 我的收藏
+    def get_collection(self):
+        collections_list = Collection.objects.filter(collector=self.request.user)
+
+        collections = []
+        for collection in collections_list:
+            model = collection.content_type.model_class()
+            object = model.objects.get(pk=collection.object_id)
+            collections.append(object)
+        return collections
+
+    def get_comment(self):
+        content_type = ContentType.objects.get(model='blog')
+        comments = Comment.objects.filter(creater=self.request.user, content_type=content_type)
+        return comments
+
     def get_context_data(self, **kwargs):
         context = super(ProfileView, self).get_context_data()
         context.update(self.get_profile_information())
         context.update(self.get_change_nick_name_form())
         context.update(self.get_change_email_form())
         context.update(self.get_change_password_form())
+        context['collections'] = self.get_collection()
+        context['comments'] = self.get_comment()
         return context
 
 

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load comment_tags %}
+{% load like_tags %}
+{% load collect_tags %}
+
+{% block blog_status %}
+    active
+{% endblock %}
+
+{% block title %}
+    {{ blog.title }}
+{% endblock %}
+
+{% block other_css %}
+    <link rel="stylesheet" href="{% static 'css/blog/blog_detail.css' %}">
+{% endblock %}
+
+{% block body_content %}
+    <div class="row">
+        <div class="col-md-8 blog_detail">
+            <h3 style="text-align: center">{{ blog.title }}</h3>
+            <div class="blog_detail_information">
+                <span class="glyphicon glyphicon-user" title="作者">&nbsp;{{ blog.creater }}&nbsp;</span>
+                <span class="glyphicon glyphicon-tags" title="标签">
+                    {% for tag in blog.tags.all %}
+                        {% if forloop.last %}
+                            <a href="{% url 'blog:blog_list_with_type' tag.pk %}">{{ tag.name }}</a>&nbsp;
+                        {% else %}
+                            <a href="{% url 'blog:blog_list_with_type' tag.pk %}">{{ tag.name }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                <span class="glyphicon glyphicon-time" title="发表时间">&nbsp;{{ blog.created_time|date:'Y-m-d H:i:s' }}</span>&nbsp;
+                <span id="like_blog_{{ blog.pk }}" class="glyphicon glyphicon-thumbs-up {% get_like_blog_status blog.pk %}" title="点赞数">&nbsp;<span class="like_blog_total">{% get_like_total 'blog' blog.pk %}</span></span>&nbsp;
+                <span id="collect_blog_{{ blog.pk }}" class="glyphicon glyphicon-heart {% get_collect_status 'blog' blog.pk %}" title="收藏"></span>
+
+            </div>
+            <div class="blog_detail_content">
+                {{ blog.content }}
+            </div>
+        </div>
+        {# 右边栏 #}
+        <div class="col-md-4" id="blog_detail_comment">
+            {# 输入评论框 #}
+            {% if request.user.is_authenticated %}
+                <h3>发表伟大评论</h3>
+                <p id="comment_to"></p>
+                <form id="comment_form" action="{% url 'comment:comment_submit' %}" method="post">
+                    {% get_comment_form 'blog' blog.pk as comment_form %}
+                    {% for field in comment_form.visible_fields %}
+                        {% csrf_token %}
+                        <div class="form-group">
+                            {{ field }}
+                            {{ field.errors }}
+                        </div>
+                    {% endfor %}
+                    {% for field in comment_form.hidden_fields %}
+                            {{ field }}
+                    {% endfor %}
+                    <div id="form_non_field_errors" class="text-danger">{{ form.non_field_errors }}</div>
+                    <div><input type="submit" class="btn btn-default" value="发表"></div>
+                </form>
+            {% else %}
+                <h3>登陆后方可评论</h3>
+            {% endif %}
+            {# 评论列表 #}
+            <div id="comment_area" class="nav nav-tabs" role="tablist">
+                {% for comment in blog.comment.all %}
+                    {# 祖宗评论 #}
+                    <div class="comment comment_{{ comment.pk }}" id="comment_{{ comment.pk }}">
+                        <span class="comment_creater">{{ comment.creater.username }}</span> &nbsp;：{{ comment.content }}
+                        <div class="option" data-pk="{{ comment.pk }}" id="option_{{ comment.pk }}">
+                            {{ comment.create_time|date:"Y-m-d H:i:s" }}
+                            <span class="pull-right">
+                                {% if request.user.is_authenticated and request.user.username == comment.creater.username %}
+                                    <span class="delete" id="delete_{{ comment.pk }}" hidden="hidden" data-delete-pk="{{ comment.pk }}"><a href="">删除</a></span>
+                                {% endif %}
+                                <span class="reply"
+                                      data-parent-comment-pk="{{ comment.pk }}"
+                                      data-parent-comment-name="{{ comment.creater.username }}"
+                                      data-top-comment-pk="{{ comment.pk }}">
+                                    <a href="">回复</a>
+                                </span>
+                                <span class="like {% get_like_status 'comment' comment.pk %}" data-content-type="comment" data-object-id="{{ comment.pk }}" id="like_{{ comment.pk }}">
+                                    赞(<span id="like_{{ comment.pk }}_total">{% get_like_total 'comment' comment.pk %}</span>)
+                                </span>
+                            </span>
+                        </div>
+                        {# 后代评论 #}
+                        <div class="child_comment" id="top_comment_{{ comment.pk }}">
+                            {% for child_comment in comment.descendants.all %}
+                                <div class="comment child_comment_{{ child_comment.pk }}" id="comment_{{ child_comment.pk }}">
+                                    <span class="comment_creater">{{ child_comment.creater.username }}</span> &nbsp;回复 &nbsp;<span class="comment_creater">{{ child_comment.parent_comment.creater.username }}</span>：{{ child_comment.content }}
+                                    <div class="option" data-pk="{{ child_comment.pk }}" id="option_{{ child_comment.pk }}">
+                                        {{ child_comment.create_time|date:"Y-m-d H:i:s" }}
+                                        <span class="pull-right">
+                                            {% if request.user.is_authenticated and request.user.username == child_comment.creater.username %}
+                                                <span class="delete" id="delete_{{ child_comment.pk }}" hidden="hidden" data-delete-pk="{{ child_comment.pk }}"><a href="">删除</a></span>
+                                            {% endif %}
+                                            <span class="reply"
+                                                  data-parent-comment-pk="{{ child_comment.pk }}"
+                                                  data-parent-comment-name="{{ child_comment.creater.username }}"
+                                                  data-top-comment-pk="{{ comment.pk }}">
+                                                <a href="">回复</a>
+                                            </span>
+                                            <span class="like {% get_like_status 'comment' child_comment.pk %}" data-content-type="comment" data-object-id="{{ child_comment.pk }}" id="like_{{ child_comment.pk }}">
+                                                赞(<span id="like_{{ child_comment.pk }}_total">{% get_like_total 'comment' child_comment.pk %}</span>)
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p class="no_comment" hidden="hidden">还没有人评论，快来抢沙发</p>
+                {% empty %}
+                    <p class="no_comment">还没有人评论，快来抢沙发</p>
+                {% endfor %}
+            </div>
+        </div>
+        {# 点赞 #}
+        <div id="like_blog" data-blog-pk="{{ blog.pk }}">
+            {% get_like_status 'blog' blog.pk as status %}
+            {% if status == 'like_like' %}
+                <button class="btn btn-default" id="like_{{ blog.pk }}">感谢点赞</button>
+            {% else %}
+                <button class="btn btn-default">点个赞吧</button>
+            {% endif %}
+        </div>
+        {# 收藏 #}
+        <div id="collect_blog" data-blog-pk="{{ blog.pk }}">
+            {% get_collect_status 'blog' blog.pk as status %}
+            {% if status == 'collected' %}
+                <button class="btn btn-default" id="collect_{{ blog.pk }}">感谢收藏</button>
+            {% else %}
+                <button class="btn btn-default" id="collect_{{ blog.pk }}">收藏一下</button>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript" src="{% static "js/blog/blog_detail.js" %}">
+    </script>
+{% endblock %}
+

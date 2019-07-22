@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.contrib.contenttypes.fields import GenericRelation
+from comment.models import Comment
 
 # Create your models here.
 class BlogTag(models.Model):
@@ -17,7 +18,8 @@ class Blog(models.Model):
     introduction = models.TextField(max_length=200)
     content = models.TextField()
     creater = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blogs')  # 作者
-    tag = models.ManyToManyField(BlogTag, related_name='blogs')
+    tags = models.ManyToManyField(BlogTag, related_name='blogs')
+    comment = GenericRelation(Comment, related_query_name='blog')
 
     created_time = models.DateTimeField(auto_now_add=True)
     last_time = models.DateTimeField(auto_now=True)

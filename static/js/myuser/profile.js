@@ -106,5 +106,14 @@ $(document).ready(function () {
                 }
             }
         })
+    });
+
+    $(document).scroll(function () {
+        var scroH = $(document).scrollTop();
+        if (scroH > 233) {
+            $('.go_top').show()
+        } else {
+            $('.go_top').hide()
+        }
     })
 });
