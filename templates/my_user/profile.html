@@ -9,13 +9,15 @@
 
 {% block other_css %}
     <link rel="stylesheet" href="{% static 'css/myuser/profile.css' %}">
+    <link href="{% static 'cropper/cropper.min.css' %}" rel="stylesheet">
+	<link href="{% static 'sitelogo/sitelogo.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block body_content %}
     <div class="row">
         {# 左侧导航 #}
         <div class="col-md-2">
-            <a href=""id="top"></a>
+            <a href="" id="top"></a>
             <div role="navigation">
                 <ul class="nav nav-pills nav-stacked"  role="tablist">
                     <li role="presentation" class="active">
@@ -27,9 +29,9 @@
                     <li role="presentation" class="">
                         <a href="#comment" aria-controls="messages" role="tab" data-toggle="tab">我的评论</a>
                     </li>
-                    <li role="presentation" class="">
-                        <a href="#history" aria-controls="settings" role="tab" data-toggle="tab">浏览历史</a>
-                    </li>
+{#                    <li role="presentation" class="">#}
+{#                        <a href="#history" aria-controls="settings" role="tab" data-toggle="tab">浏览历史</a>#}
+{#                    </li>#}
                 </ul>
                 <p class="go_top" hidden="hidden"><button type="button" class="btn btn-default"><a href="#top">返回顶部</a></button></p>
             </div>
@@ -39,117 +41,173 @@
             <div class="tab-content">
                 {# 个人信息 #}
                 <div role="tabpanel" class="tab-pane active" id="information">
+                    <h4 class="option_title">个人信息</h4>
                     <div class="panel panel-default">
-                        <div class="panel-heading">
-                            个人信息
-                        </div>
                         <div class="panel-body">
-                            {# 昵称 #}
-                            <div class="row information" >
-                                <div class="col-md-2">昵称</div>
-                                <div class="col-md-4">{{ profile.nick_name|default_if_none:"暂无昵称" }}</div>
+                            <div class="row">
                                 <div class="col-md-4">
-                                    <a href="" id="change_nick_name_link" data-toggle="modal" data-target="#change_nick_name" data-whatever="@mdo">
-                                        修改昵称
-                                    </a>
-                                </div>
-                                <div class="modal fade" id="change_nick_name" tabindex="-1" role="dialog" aria-labelledby="change_nick_name">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                修改昵称
-                                            </div>
-                                             <form  id="change_nick_name_form" action="{% url 'accounts:change_nick_name' %}" method="post">
-                                                {% csrf_token %}
-                                                <div class="modal-body">
-                                                    <div class="form-group nick_name_information">
-                                                        {% for field in change_nick_name_form %}
-                                                            <label for="{{ field.label }}">{{ field.label }}</label>
-                                                            {{ field }}
-                                                            {{ field.errors }}
-                                                        {% endfor %}
+                                    <img src="{{ profile.avatar.url }}" id="profile_avatar" alt="" data-toggle="modal" data-target="#avatar-modal" title="点击更换头像" class="img-circle">
+                                    <div class="modal fade" id="avatar-modal" aria-hidden="true" aria-labelledby="avatar-modal-label" role="dialog" tabindex="-1">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <form class="avatar-form" action="{% url 'accounts:ajax_avatar_upload' %}" enctype="multipart/form-data" method="post">
+                                                    {% csrf_token %}
+                                                    <div class="modal-header">
+                                                        <button class="close" data-dismiss="modal" type="button">&times;</button>
+                                                        <h4 class="modal-title" id="avatar-modal-label">更换头像</h4>
                                                     </div>
-                                                    <div class="text-danger" id="change_nick_name_form_errors">{{ change_nick_name_form.non_field_errors }}</div>
+                                                    <div class="modal-body">
+                                                        <div class="avatar-body">
+                                                            <div class="avatar-upload">
+                                                                <input class="avatar-src" name="avatar_src" type="hidden">
+                                                                <input class="avatar-data" name="avatar_data" type="hidden">
+                                                                {% for field in upload_avatar_form %}
+                                                                    <label for="avatarInput">图片上传</label>
+                                                                    {{ field }}
+                                                                {% endfor %}
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-9">
+                                                                    <div class="avatar-wrapper"></div>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <div class="avatar-preview preview-lg"></div>
+                                                                    <div class="avatar-preview preview-md"></div>
+                                                                    <div class="avatar-preview preview-sm"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row avatar-btns">
+                                                                <div class="col-md-9">
+                                                                    <div class="btn-group">
+                                                                        <button class="btn" data-method="rotate" data-option="-90" type="button" title="Rotate -90 degrees"><i class="fa fa-undo"></i> 向左旋转</button>
+                                                                    </div>
+                                                                    <div class="btn-group">
+                                                                        <button class="btn" data-method="rotate" data-option="90" type="button" title="Rotate 90 degrees"><i class="fa fa-repeat"></i> 向右旋转</button>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <button class="btn btn-success btn-block avatar-save" type="submit"><i class="fa fa-save"></i> 保存修改</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            </form>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="loading" aria-label="Loading" role="img" tabindex="-1"></div>
+                                </div>
+                                <div class="col-md-8">
+                                    {# 昵称 #}
+                                    <div class="row information" >
+                                        <div class="col-md-3" style="font-weight: bold; font-size: 1.1em;">昵称</div>
+                                        <div class="col-md-4">{{ profile.nick_name|default_if_none:"暂无昵称" }}</div>
+                                        <div class="col-md-4">
+                                            <a href="" id="change_nick_name_link" data-toggle="modal" data-target="#change_nick_name" data-whatever="@mdo">
+                                                修改昵称
+                                            </a>
+                                        </div>
+                                        <div class="modal fade" id="change_nick_name" tabindex="-1" role="dialog" aria-labelledby="change_nick_name">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        修改昵称
+                                                    </div>
+                                                     <form  id="change_nick_name_form" action="{% url 'accounts:change_nick_name' %}" method="post">
+                                                        {% csrf_token %}
+                                                        <div class="modal-body">
+                                                            <div class="form-group nick_name_information">
+                                                                {% for field in change_nick_name_form %}
+                                                                    <label for="{{ field.label }}">{{ field.label }}</label>
+                                                                    {{ field }}
+                                                                    {{ field.errors }}
+                                                                {% endfor %}
+                                                            </div>
+                                                            <div class="text-danger" id="change_nick_name_form_errors">{{ change_nick_name_form.non_field_errors }}</div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button  id="" type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                                                            <button type="submit" class="btn btn-primary">确定</button>
+                                                        </div>
+                                                     </form>
                                                 </div>
-                                                <div class="modal-footer">
-                                                    <button  id="" type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                                                    <button type="submit" class="btn btn-primary">确定</button>
-                                                </div>
-                                             </form>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            {# 邮箱 #}
-                            <div class="row information">
-                                <div class="col-md-2">邮箱</div>
-                                <div class="col-md-4">{{ profile.user.email }}</div>
-                                <div class="col-md-4">
-                                    <a href="" id="change_email_link" data-toggle="modal" data-target="#change_email" data-whatever="@mdo">
-                                        修改邮箱
-                                    </a>
-                                </div>
-                                <div class="modal fade" id="change_email" tabindex="-1" role="dialog" aria-labelledby="change_email">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
+                                    {# 邮箱 #}
+                                    <div class="row information">
+                                        <div class="col-md-3" style="font-weight: bold; font-size: 1.1em;">邮箱</div>
+                                        <div class="col-md-4">{{ profile.user.email }}</div>
+                                        <div class="col-md-4">
+                                            <a href="" id="change_email_link" data-toggle="modal" data-target="#change_email" data-whatever="@mdo">
                                                 修改邮箱
-                                            </div>
-                                            <form  id="change_email_form" action="{% url 'accounts:change_email' %}" method="post">
-                                                {% csrf_token %}
-                                                <div class="modal-body">
-                                                    {% for field in change_email_form.visible_fields %}
-                                                        <div class="form-group">
-                                                            <label for="{{ field.label }}">{{ field.label }}</label>
-                                                        {{ field }}
-                                                        {{ field.errors }}
+                                            </a>
+                                        </div>
+                                        <div class="modal fade" id="change_email" tabindex="-1" role="dialog" aria-labelledby="change_email">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        修改邮箱
+                                                    </div>
+                                                    <form  id="change_email_form" action="{% url 'accounts:change_email' %}" method="post">
+                                                        {% csrf_token %}
+                                                        <div class="modal-body">
+                                                            {% for field in change_email_form.visible_fields %}
+                                                                <div class="form-group">
+                                                                    <label for="{{ field.label }}">{{ field.label }}</label>
+                                                                {{ field }}
+                                                                {{ field.errors }}
+                                                                </div>
+                                                            {% endfor %}
+                                                        <div class="text-danger" id="change_email_form_errors">{{ change_email_form.non_field_errors }}</div>
                                                         </div>
-                                                    {% endfor %}
-                                                <div class="text-danger" id="change_email_form_errors">{{ change_email_form.non_field_errors }}</div>
+                                                        <div class="modal-footer">
+                                                            <button class="btn btn-default pull-left" id="send_email">点击发送验证码</button>
+                                                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                                                            <button type="submit" class="btn btn-primary">确定</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
-                                                <div class="modal-footer">
-                                                    <button class="btn btn-default pull-left" id="send_email">点击发送验证码</button>
-                                                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                                                    <button type="submit" class="btn btn-primary">确定</button>
-                                                </div>
-                                            </form>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="row information">
-                                <div class="col-md-2">最后登录时间</div>
-                                <div class="col-md-4">{{ profile.user.last_login }}</div>
-                            </div>
-                            <div class="row information">
-                                <div class="col-md-2">
-                                    <a href="" id="change_password_link" data-toggle="modal" data-target="#change_password" data-whatever="@mdo">
-                                        修改密码
-                                    </a>
-                                </div>
-                                 <div class="modal fade" id="change_password" tabindex="-1" role="dialog" aria-labelledby="change_password">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
+                                    {# 最后登录时间 #}
+                                    <div class="row information">
+                                        <div class="col-md-3" style="font-weight: bold; font-size: 1.1em;">最后登录时间</div>
+                                        <div class="col-md-4">{{ profile.user.last_login }}</div>
+                                    </div>
+                                    {# 修改密码 #}
+                                    <div class="row information">
+                                        <div class="col-md-3">
+                                            <a href="" id="change_password_link" data-toggle="modal" data-target="#change_password" data-whatever="@mdo">
                                                 修改密码
-                                            </div>
-                                            <form  id="change_password_form" action="{% url 'accounts:change_password' %}" method="post">
-                                                {% csrf_token %}
-                                                <div class="modal-body">
-                                                    {% for field in change_password_form %}
-                                                        <div class="form-group">
-                                                            <label for="{{ field.label }}">{{ field.label }}</label>
-                                                            {{ field }}
-                                                            {{ field.errors }}
+                                            </a>
+                                        </div>
+                                         <div class="modal fade" id="change_password" tabindex="-1" role="dialog" aria-labelledby="change_password">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        修改密码
+                                                    </div>
+                                                    <form  id="change_password_form" action="{% url 'accounts:change_password' %}" method="post">
+                                                        {% csrf_token %}
+                                                        <div class="modal-body">
+                                                            {% for field in change_password_form %}
+                                                                <div class="form-group">
+                                                                    <label for="{{ field.label }}">{{ field.label }}</label>
+                                                                    {{ field }}
+                                                                    {{ field.errors }}
+                                                                </div>
+                                                            {% endfor %}
+                                                            <div class="text-danger" id="change_password_form_errors">{{ change_password_form.non_field_errors }}</div>
                                                         </div>
-                                                    {% endfor %}
-                                                    <div class="text-danger" id="change_password_form_errors">{{ change_password_form.non_field_errors }}</div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                                                            <button type="submit" class="btn btn-primary">确定</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                                                    <button type="submit" class="btn btn-primary">确定</button>
-                                                </div>
-                                            </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -159,7 +217,7 @@
                 </div>
                 {# 我的收藏 #}
                 <div role="tabpanel" class="tab-pane" id="colletion">
-                    <h4>我的收藏</h4>
+                    <h4 class="option_title">我的收藏</h4>
                     <ul class="list-group">
                         {% for collection in collections %}
                             <li class="list-group-item">
@@ -179,11 +237,14 @@
                                 </div>
                                 <p>{{ collection.introduction }}</p>
                             </li>
+                        {% empty %}
+                            <p class="empty">还没有收藏，先去<a href="{% url 'blog:blog_list' %}">逛逛</a>吧</p>
                         {% endfor %}
                     </ul>
                 </div>
+                {# 我的评论 #}
                 <div role="tabpanel" class="tab-pane" id="comment">
-                    <h4>我的评论</h4>
+                    <h4 class="option_title">我的评论</h4>
                     {% for comment in comments %}
                         <div class="panel panel-default">
                             <div class="panel-heading">
@@ -217,9 +278,11 @@
                                 {% endfor %}
                             </div>
                         </div><div></div>
+                    {% empty %}
+                         <p class="empty">还没有评论，先去<a href="{% url 'blog:blog_list' %}">逛逛</a>吧</p>
                     {% endfor %}
                 </div>
-                <div role="tabpanel" class="tab-pane" id="history">444</div>
+{#                <div role="tabpanel" class="tab-pane" id="history">444</div>#}
 
             </div>
         </div>
@@ -229,4 +292,6 @@
 {% block extra_js %}
      <script type="text/javascript" src="{% static "js/myuser/profile.js" %}">
     </script>
+    <script src="{% static 'cropper/cropper.min.js' %}"></script>
+    <script src="{% static 'sitelogo/sitelogo.js' %}"></script>
 {% endblock %}

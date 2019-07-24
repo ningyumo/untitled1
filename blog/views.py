@@ -55,10 +55,6 @@ class BlogDetailView(DetailView):
     context_object_name = 'blog'
     template_name = 'blog/blog_detail.html'
 
-    def get_comment_form(self):
-        comment_form = self.comment_form_class()
-        return comment_form
-
     def get_context_data(self, **kwargs):
         context = super(BlogDetailView, self).get_context_data(**kwargs)
         return context

@@ -1,0 +1,23 @@
+div.information_nav {
+    margin-top: 10px;
+}
+
+.blog_list .row {
+    padding: 2px 0;
+    border-bottom: 1px  gray;
+}
+
+.blog_title {
+    margin-top: 2px;
+    font-size: 2em;
+}
+
+.blog_information {
+    margin-top: 2px;
+}
+
+.blog_introduction {
+    margin-top: 2px;
+    border-bottom: 1px solid gray;
+}
+

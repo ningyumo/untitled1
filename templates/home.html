@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load comment_tags %}
 
 {% block home_status %}
     active
@@ -6,4 +9,328 @@
 
 {% block title %}
     欢迎访问我的网站
+{% endblock %}
+
+{% block other_css %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{# 轮播 #}
+{% block body_content %}
+    <div class="carousel">
+        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+            <!-- Indicators -->
+            <ol class="carousel-indicators">
+                <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="3"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="4"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="5"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="6"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="7"></li>
+            </ol>
+
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner" role="listbox">
+                <div class="item active">
+                    <img src="{% static 'img/珑瑛.jpg' %}" alt="...">
+                        <div class="carousel-caption">
+
+                    </div>
+                </div>
+                <div class="item">
+                    <img src="{% static 'img/异芳.jpg' %}" alt="...">
+                    <div class="carousel-caption">
+
+                    </div>
+                </div>
+                <div class="item">
+                    <img src="{% static 'img/司命.jpg' %}" alt="...">
+                    <div class="carousel-caption">
+
+                    </div>
+                </div>
+                <div class="item">
+                    <img src="{% static 'img/咒隐.jpg' %}" alt="...">
+                    <div class="carousel-caption">
+
+                    </div>
+                </div>
+                <div class="item">
+                    <img src="{% static 'img/妙法.jpg' %}" alt="...">
+                    <div class="carousel-caption">
+
+                    </div>
+                </div>
+                <div class="item">
+                    <img src="{% static 'img/御剑.jpg' %}" alt="...">
+                    <div class="carousel-caption">
+
+                    </div>
+                </div>
+                <div class="item">
+                    <img src="{% static 'img/斩风.jpg' %}" alt="...">
+                    <div class="carousel-caption">
+
+                    </div>
+                </div>
+                <div class="item">
+                    <img src="{% static 'img/天罡.jpg' %}" alt="...">
+                    <div class="carousel-caption">
+
+                    </div>
+                </div>
+            </div>
+            <!-- Controls -->
+            <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+    </div>
+    <div class="row information_nav">
+        <div class="col-md-6">
+            <div role="navigation">
+                <ul class="nav nav-tabs">
+                    <li role="presentation" class="active option"><a href="#new" aria-controls="new" role="tab" data-toggle="tab">最新发布</a></li>
+                    <li role="presentation" class="option"><a href="#biggest_comment" aria-controls="biggest_comment" role="tab" data-toggle="tab">最多评论</a></li>
+                    <li role="presentation" class="option"><a href="#biggest_like" aria-controls="biggest_like" role="tab" data-toggle="tab">最多点赞</a></li>
+                </ul>
+                <div class="tab-content">
+                    {# 最新发布 #}
+                    <div role="tabpanel" class="tab-pane active" id="new">
+                        <div class="blog_list">
+                            {% for blog in new_blog_list %}
+                                {% if forloop.counter == 1 %}
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <img src="{% static 'img/第一名.webp' %}" alt="">&nbsp;&nbsp;
+                                        </div>
+                                        <div class="col-md-10">
+                                            <div>
+                                                <a class="blog_title" href="{% url 'blog:blog_detail' blog.pk %}">{{ blog.title }}</a>
+                                                <span class="blog_information pull-right">
+                                                    <span>作者：{{ blog.creater }}</span><br>
+                                                    <span>发表时间：{{ blog.created_time|date:'Y-m-d' }}</span>
+                                                </span>
+                                            </div>
+                                            <div class="blog_introduction">{{ blog.introduction }}</div>
+                                        </div>
+                                    </div>
+                                {% elif forloop.counter == 2 %}
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <img src="{% static 'img/第二名.webp' %}" alt="">&nbsp;&nbsp;
+                                        </div>
+                                        <div class="col-md-10">
+                                             <div>
+                                                <a class="blog_title" href="{% url 'blog:blog_detail' blog.pk %}">{{ blog.title }}</a>
+                                                <span class="blog_information pull-right">
+                                                    <span>作者：{{ blog.creater }}</span><br>
+                                                    <span>发表时间：{{ blog.created_time|date:'Y-m-d' }}</span>
+                                                </span>
+                                            </div>
+                                            <div class="blog_introduction">{{ blog.introduction }}</div>
+                                        </div>
+                                    </div>
+                                {% elif forloop.counter == 3 %}
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <img src="{% static 'img/第三名.webp' %}" alt="">&nbsp;&nbsp;
+                                        </div>
+                                        <div class="col-md-10">
+                                             <div>
+                                                <a class="blog_title" href="{% url 'blog:blog_detail' blog.pk %}">{{ blog.title }}</a>
+                                                <span class="blog_information pull-right">
+                                                    <span>作者：{{ blog.creater }}</span><br>
+                                                    <span>发表时间：{{ blog.created_time|date:'Y-m-d' }}</span>
+                                                </span>
+                                            </div>
+                                            <div class="blog_introduction">{{ blog.introduction }}</div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="row">
+                                        <div class="col-md-2">
+
+                                        </div>
+                                        <div class="col-md-10">
+                                             <div>
+                                                <a class="blog_title" href="{% url 'blog:blog_detail' blog.pk %}">{{ blog.title }}</a>
+                                                <span class="blog_information pull-right">
+                                                    <span>作者：{{ blog.creater }}</span><br>
+                                                    <span>发表时间：{{ blog.created_time|date:'Y-m-d' }}</span>
+                                                </span>
+                                            </div>
+                                            <div class="blog_introduction">{{ blog.introduction }}</div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {# 最多评论 #}
+                    <div role="tabpanel" class="tab-pane" id="biggest_comment">
+                        <div class="blog_list">
+                            {% for blog in most_comment_blogs %}
+                                {% if forloop.counter == 1 %}
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <img src="{% static 'img/第一名.webp' %}" alt="">&nbsp;&nbsp;
+                                        </div>
+                                        <div class="col-md-10">
+                                             <div>
+                                                <a class="blog_title" href="{% url 'blog:blog_detail' blog.pk %}">{{ blog.title }}</a>
+                                                <span class="blog_information pull-right">
+                                                    <span>作者：{{ blog.creater }}</span><br>
+                                                    <span>评论数：{{ blog.comment.all.count }}</span>
+                                                </span>
+                                            </div>
+                                            <div class="blog_introduction">{{ blog.introduction }}</div>
+                                        </div>
+                                    </div>
+                                {% elif forloop.counter == 2 %}
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <img src="{% static 'img/第二名.webp' %}" alt="">&nbsp;&nbsp;
+                                        </div>
+                                        <div class="col-md-10">
+                                             <div>
+                                                <a class="blog_title" href="{% url 'blog:blog_detail' blog.pk %}">{{ blog.title }}</a>
+                                                <span class="blog_information pull-right">
+                                                    <span>作者：{{ blog.creater }}</span><br>
+                                                    <span>评论数：{{ blog.comment.all.count }}</span>
+                                                </span>
+                                            </div>
+                                            <div class="blog_introduction">{{ blog.introduction }}</div>
+                                        </div>
+                                    </div>
+                                {% elif forloop.counter == 3 %}
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <img src="{% static 'img/第三名.webp' %}" alt="">&nbsp;&nbsp;
+                                        </div>
+                                        <div class="col-md-10">
+                                             <div>
+                                                <a class="blog_title" href="{% url 'blog:blog_detail' blog.pk %}">{{ blog.title }}</a>
+                                                <span class="blog_information pull-right">
+                                                    <span>作者：{{ blog.creater }}</span><br>
+                                                    <span>评论数：{{ blog.comment.all.count }}</span>
+                                                </span>
+                                            </div>
+                                            <div class="blog_introduction">{{ blog.introduction }}</div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="row">
+                                        <div class="col-md-2">
+
+                                        </div>
+                                        <div class="col-md-10">
+                                             <div>
+                                                <a class="blog_title" href="{% url 'blog:blog_detail' blog.pk %}">{{ blog.title }}</a>
+                                                <span class="blog_information pull-right">
+                                                    <span>作者：{{ blog.creater }}</span><br>
+                                                    <span>评论数：{{ blog.comment.all.count }}</span>
+                                                </span>
+                                            </div>
+                                            <div class="blog_introduction">{{ blog.introduction }}</div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {# 最多点赞 #}
+                    <div role="tabpanel" class="tab-pane" id="biggest_like">
+                        <div class="blog_list">
+                            {% for blog in most_like_blogs %}
+                                {% if forloop.counter == 1 %}
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <img src="{% static 'img/第一名.webp' %}" alt="">&nbsp;&nbsp;
+                                        </div>
+                                        <div class="col-md-10">
+                                             <div>
+                                                <a class="blog_title" href="{% url 'blog:blog_detail' blog.pk %}">{{ blog.title }}</a>
+                                                <span class="blog_information pull-right">
+                                                    <span>作者：{{ blog.creater }}</span><br>
+                                                    <span>点赞数：{{ blog.like.all.count }}</span>
+                                                </span>
+                                            </div>
+                                            <div class="blog_introduction">{{ blog.introduction }}</div>
+                                        </div>
+                                    </div>
+                                {% elif forloop.counter == 2 %}
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <img src="{% static 'img/第二名.webp' %}" alt="">&nbsp;&nbsp;
+                                        </div>
+                                        <div class="col-md-10">
+                                             <div>
+                                                <a class="blog_title" href="{% url 'blog:blog_detail' blog.pk %}">{{ blog.title }}</a>
+                                                <span class="blog_information pull-right">
+                                                    <span>作者：{{ blog.creater }}</span><br>
+                                                    <span>点赞数：{{ blog.like.all.count }}</span>
+                                                </span>
+                                            </div>
+                                            <div class="blog_introduction">{{ blog.introduction }}</div>
+                                        </div>
+                                    </div>
+                                {% elif forloop.counter == 3 %}
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <img src="{% static 'img/第三名.webp' %}" alt="">&nbsp;&nbsp;
+                                        </div>
+                                        <div class="col-md-10">
+                                             <div>
+                                                <a class="blog_title" href="{% url 'blog:blog_detail' blog.pk %}">{{ blog.title }}</a>
+                                                <span class="blog_information pull-right">
+                                                    <span>作者：{{ blog.creater }}</span><br>
+                                                    <span>点赞数：{{ blog.like.all.count }}</span>
+                                                </span>
+                                            </div>
+                                            <div class="blog_introduction">{{ blog.introduction }}</div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="row">
+                                        <div class="col-md-2">
+
+                                        </div>
+                                        <div class="col-md-10">
+                                             <div>
+                                                <a class="blog_title" href="{% url 'blog:blog_detail' blog.pk %}">{{ blog.title }}</a>
+                                                <span class="blog_information pull-right">
+                                                    <span>作者：{{ blog.creater }}</span><br>
+                                                    <span>点赞数：{{ blog.like.all.count }}</span>
+                                                </span>
+                                            </div>
+                                            <div class="blog_introduction">{{ blog.introduction }}</div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <<script type="text/javascript">
+        $('.option').mouseover(function () {
+            $(this).click()
+        })
+    </script>
 {% endblock %}

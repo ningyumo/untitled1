@@ -10,11 +10,15 @@ register = template.Library()
 def get_like_status(context, content_type, object_id):
     user = context['user']
     content_type = ContentType.objects.get(model=content_type)
-    like = Like.objects.filter(content_type=content_type, object_id=object_id, liker=user)
-    if like.exists():
-        return 'like_like'
-    else:
+    try:
+        like = Like.objects.filter(content_type=content_type, object_id=object_id, liker=user)
+    except:
         return 'like_dislike'
+    else:
+        if like.exists():
+            return 'like_like'
+        else:
+            return 'like_dislike'
 
 
 # 点赞状态，针对博客
@@ -22,10 +26,14 @@ def get_like_status(context, content_type, object_id):
 def get_like_blog_status(context, object_id):
     user = context['user']
     content_type = ContentType.objects.get(model='blog')
-    like = Like.objects.filter(content_type=content_type, object_id=object_id, liker=user)
-    if like.exists():
-        return 'like_blog'
-    return None
+    try:
+        like = Like.objects.filter(content_type=content_type, object_id=object_id, liker=user)
+    except:
+        return None
+    else:
+        if like.exists():
+            return 'like_blog'
+
 
 # 点赞总数，针对任何模型
 @register.simple_tag()

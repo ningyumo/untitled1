@@ -39,7 +39,10 @@ $(document).ready(function (newChild, refChild) {
                         $('#id_content').val('');
                         $('#comment_to').text('');
                         if (data['comment_top_comment_pk'] == ''){
-                            var html_text = '<div class="comment comment_{0}" id="comment_{0}">' +
+                            var html_text = '<div class="comment ancestor_comment comment_{0}" id="comment_{0}">' +
+                                '<div class="row"><div class="col-md-2">' +
+                                '<img class="blog_detail_profile_avatar img-circle" src="{4}" alt="">' +
+                                '</div><div class="col-md-10">' +
                                 '<span class="comment_creater">{1}</span> &nbsp;：{2}' +
                                 '<div class="option" data-pk="{0}" id="option_{0}">{3}' +
                                 '<span class="pull-right">' +
@@ -48,11 +51,12 @@ $(document).ready(function (newChild, refChild) {
                                 'data-parent-comment-name="{1}" data-top-comment-pk="{0}">' +
                                 '<a href="">回复</a>' +
                                 '</span>&nbsp;<span class="like like_dislike" data-content-type="comment" data-object-id="{0}" id="like_{0}">' +
-                                '赞(<span id="like_{0}_total">0</span>)</span></span></div><div class="child_comment" id="top_comment_{0}"></div></div>';
+                                '赞(<span id="like_{0}_total">0</span>)</span></span></div><div class="child_comment" id="top_comment_{0}"></div></div></div></div>';
                             html_text = html_text.format(data['comment_pk'],
                                 data['comment_creater_username'],
                                 data['comment_content'],
-                                data['create_time'],);
+                                data['create_time'],
+                                data['avatar_url']);
                             $('#comment_area').prepend(html_text);
                             // 绑定回复功能
                             $('#comment_area').on('click', '.reply',function (event) {
@@ -245,7 +249,7 @@ $(document).ready(function (newChild, refChild) {
             })
         }
     });
-    // 回复评论
+    // 回复评论（登录后）
     $('.reply').click(function (event) {
         event.preventDefault();
         var parent_comment_creater_username = $(this).data('parent-comment-name');
@@ -258,7 +262,11 @@ $(document).ready(function (newChild, refChild) {
         $('#id_parent_comment_pk').val(parent_comment_pk);
         $('#id_top_comment_pk').val(top_comment_pk);
     });
-
+    // 回复评论（未登录，显示登陆框）
+    $('.reply_no_login').click(function (event) {
+        event.preventDefault();
+        $('#login_modal').modal('show');
+    })
     // 显示和隐藏删除评论按钮
     $('.option').mouseout(function () {
        var  pk = $(this).data('pk');
@@ -326,6 +334,8 @@ $(document).ready(function (newChild, refChild) {
                     var total = $('#like_' + object_id + '_total').text();
                     total--;
                     $('#like_' + object_id + '_total').text(total)
+                } else if (data['status'] == 'NO_LOGIN_ERROR') {
+                    $('#login_modal').modal('show');
                 }
             }
         })
@@ -349,12 +359,16 @@ $(document).ready(function (newChild, refChild) {
                     total++;
                     $('.like_blog_total').text(total);
                     $('#like_blog_' + object_id).addClass('like_blog');
+                    $('#like_' + object_id).addClass('option_blog_btn');
                 } else if (data['status'] == 'DELETE_SUCCESS') {
                     $('#like_blog_' + object_id).removeClass('like_blog');
+                    $('#like_' + object_id).removeClass('option_blog_btn');
                     $('#like_' + object_id).text('点个赞吧');
                     var total = $('.like_blog_total').text();
                     total--;
                     $('.like_blog_total').text(total);
+                } else if (data['status'] == 'NO_LOGIN_ERROR') {
+                    $('#login_modal').modal('show');
                 }
             }
         })
@@ -374,10 +388,20 @@ $(document).ready(function (newChild, refChild) {
             success: function (data) {
                 if (data['status'] == 'CREATE_SUCCESS') {
                     $('#collect_' + object_id).text('感谢收藏');
+                    var total = $('.collect_blog_total').text();
+                    total++;
+                    $('.collect_blog_total').text(total);
                     $('#collect_blog_' + object_id).addClass('collected');
-                } else {
+                    $('#collect_' + object_id).addClass('option_blog_btn');
+                } else if (data['status'] == 'DELETE_SUCCESS'){
                     $('#collect_' + object_id).text('收藏一下');
+                    var total = $('.collect_blog_total').text();
+                    total--;
+                    $('.collect_blog_total').text(total);
                     $('#collect_blog_' + object_id).removeClass('collected');
+                    $('#collect_' + object_id).removeClass('option_blog_btn');
+                } else if (data['status'] == 'NO_LOGIN_ERRORS') {
+                    $('#login_modal').modal('show');
                 }
             },
         })

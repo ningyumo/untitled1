@@ -3,6 +3,7 @@
 {% load comment_tags %}
 {% load like_tags %}
 {% load collect_tags %}
+{% load myuser_tags %}
 
 {% block blog_status %}
     active
@@ -32,8 +33,8 @@
                     {% endfor %}
                 </span>
                 <span class="glyphicon glyphicon-time" title="发表时间">&nbsp;{{ blog.created_time|date:'Y-m-d H:i:s' }}</span>&nbsp;
-                <span id="like_blog_{{ blog.pk }}" class="glyphicon glyphicon-thumbs-up {% get_like_blog_status blog.pk %}" title="点赞数">&nbsp;<span class="like_blog_total">{% get_like_total 'blog' blog.pk %}</span></span>&nbsp;
-                <span id="collect_blog_{{ blog.pk }}" class="glyphicon glyphicon-heart {% get_collect_status 'blog' blog.pk %}" title="收藏"></span>
+                <span id="like_blog_{{ blog.pk }}" class="glyphicon glyphicon-thumbs-up {% get_like_blog_status blog.pk %}" title="点赞数">（<span class="like_blog_total">{% get_like_total 'blog' blog.pk %}</span>）</span>&nbsp;
+                <span id="collect_blog_{{ blog.pk }}" class="glyphicon glyphicon-heart {% get_collect_status 'blog' blog.pk %}" title="收藏">（<span class="collect_blog_total">{% get_collect_total 'blog' blog.pk %}</span>）</span>
 
             </div>
             <div class="blog_detail_content">
@@ -68,27 +69,36 @@
             <div id="comment_area" class="nav nav-tabs" role="tablist">
                 {% for comment in blog.comment.all %}
                     {# 祖宗评论 #}
-                    <div class="comment comment_{{ comment.pk }}" id="comment_{{ comment.pk }}">
-                        <span class="comment_creater">{{ comment.creater.username }}</span> &nbsp;：{{ comment.content }}
-                        <div class="option" data-pk="{{ comment.pk }}" id="option_{{ comment.pk }}">
-                            {{ comment.create_time|date:"Y-m-d H:i:s" }}
-                            <span class="pull-right">
-                                {% if request.user.is_authenticated and request.user.username == comment.creater.username %}
-                                    <span class="delete" id="delete_{{ comment.pk }}" hidden="hidden" data-delete-pk="{{ comment.pk }}"><a href="">删除</a></span>
-                                {% endif %}
-                                <span class="reply"
-                                      data-parent-comment-pk="{{ comment.pk }}"
-                                      data-parent-comment-name="{{ comment.creater.username }}"
-                                      data-top-comment-pk="{{ comment.pk }}">
-                                    <a href="">回复</a>
-                                </span>
-                                <span class="like {% get_like_status 'comment' comment.pk %}" data-content-type="comment" data-object-id="{{ comment.pk }}" id="like_{{ comment.pk }}">
-                                    赞(<span id="like_{{ comment.pk }}_total">{% get_like_total 'comment' comment.pk %}</span>)
-                                </span>
-                            </span>
-                        </div>
-                        {# 后代评论 #}
-                        <div class="child_comment" id="top_comment_{{ comment.pk }}">
+                    <div class="comment ancestor_comment comment_{{ comment.pk }}" id="comment_{{ comment.pk }}">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <img class="blog_detail_profile_avatar img-circle" src="{{ comment.creater.profile.avatar.url }}" alt="">
+                            </div>
+                            <div class="col-md-10">
+                                <span class="comment_creater">{{ comment.creater.username }}</span> &nbsp;：{{ comment.content }}
+                                <div class="option" data-pk="{{ comment.pk }}" id="option_{{ comment.pk }}">
+                                    {{ comment.create_time|date:"Y-m-d H:i:s" }}
+                                    <span class="pull-right">
+                                        {% if request.user.is_authenticated and request.user.username == comment.creater.username %}
+                                            <span class="delete" id="delete_{{ comment.pk }}" hidden="hidden" data-delete-pk="{{ comment.pk }}"><a href="">删除</a></span>
+                                        {% endif %}
+                                        <span class="{% if request.user.is_authenticated %}
+                                                         reply
+                                                     {% else %}
+                                                         reply_no_login
+                                                     {% endif %}"
+                                              data-parent-comment-pk="{{ comment.pk }}"
+                                              data-parent-comment-name="{{ comment.creater.username }}"
+                                              data-top-comment-pk="{{ comment.pk }}">
+                                            <a href="">回复</a>
+                                        </span>
+                                        <span class="like {% get_like_status 'comment' comment.pk %}" data-content-type="comment" data-object-id="{{ comment.pk }}" id="like_{{ comment.pk }}">
+                                            赞(<span id="like_{{ comment.pk }}_total">{% get_like_total 'comment' comment.pk %}</span>)
+                                        </span>
+                                    </span>
+                                </div>
+                                {# 后代评论 #}
+                                <div class="child_comment" id="top_comment_{{ comment.pk }}">
                             {% for child_comment in comment.descendants.all %}
                                 <div class="comment child_comment_{{ child_comment.pk }}" id="comment_{{ child_comment.pk }}">
                                     <span class="comment_creater">{{ child_comment.creater.username }}</span> &nbsp;回复 &nbsp;<span class="comment_creater">{{ child_comment.parent_comment.creater.username }}</span>：{{ child_comment.content }}
@@ -98,7 +108,11 @@
                                             {% if request.user.is_authenticated and request.user.username == child_comment.creater.username %}
                                                 <span class="delete" id="delete_{{ child_comment.pk }}" hidden="hidden" data-delete-pk="{{ child_comment.pk }}"><a href="">删除</a></span>
                                             {% endif %}
-                                            <span class="reply"
+                                            <span class="{% if request.user.is_authenticated %}
+                                                            reply
+                                                        {% else %}
+                                                            reply_no_login
+                                                        {% endif %}"
                                                   data-parent-comment-pk="{{ child_comment.pk }}"
                                                   data-parent-comment-name="{{ child_comment.creater.username }}"
                                                   data-top-comment-pk="{{ comment.pk }}">
@@ -112,6 +126,8 @@
                                 </div>
                             {% endfor %}
                         </div>
+                            </div>
+                        </div>
                     </div>
                     <p class="no_comment" hidden="hidden">还没有人评论，快来抢沙发</p>
                 {% empty %}
@@ -123,20 +139,55 @@
         <div id="like_blog" data-blog-pk="{{ blog.pk }}">
             {% get_like_status 'blog' blog.pk as status %}
             {% if status == 'like_like' %}
-                <button class="btn btn-default" id="like_{{ blog.pk }}">感谢点赞</button>
+                <button class="btn btn-default option_blog_btn" id="like_{{ blog.pk }}">感谢点赞</button>
             {% else %}
-                <button class="btn btn-default">点个赞吧</button>
+                <button class="btn btn-default" id="like_{{ blog.pk }}">点个赞吧</button>
             {% endif %}
         </div>
         {# 收藏 #}
         <div id="collect_blog" data-blog-pk="{{ blog.pk }}">
             {% get_collect_status 'blog' blog.pk as status %}
             {% if status == 'collected' %}
-                <button class="btn btn-default" id="collect_{{ blog.pk }}">感谢收藏</button>
+                <button class="btn btn-default option_blog_btn" id="collect_{{ blog.pk }}">感谢收藏</button>
             {% else %}
                 <button class="btn btn-default" id="collect_{{ blog.pk }}">收藏一下</button>
             {% endif %}
         </div>
+        {# 返回博客列表 #}
+        <div id="return_previous_page" data-blog-pk="{{ blog.pk }}">
+                <button class="btn btn-default" id="collect_{{ blog.pk }}"><a href="{% url 'blog:blog_list' %}">返回列表</a></button>
+        </div>
+
+        {# 登录弹窗 #}
+        <div class="modal fade" tabindex="-1" role="dialog" id="login_modal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">登录</h4>
+                    </div>
+                    <form action="{% url 'accounts:login' %}?next={% url 'blog:blog_detail' blog.pk %}" method="post">
+                        {% get_login_form  as login_form%}
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            {% for field in login_form %}
+                                <div class="form-group">
+                                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    <div class="text-danger">{{ field.errors }}</div>
+                                  </div>
+                            {% endfor %}
+                            <div class="text-danger">{{ form.non_field_errors }}</div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button class="btn btn-default pull-left"><a href="{% url 'accounts:find_password' %}">忘记密码？</a></button>
+                            <input type="submit" value="登录" class="btn btn-default pull-right">
+                        </div>
+                    </form>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
     </div>
 {% endblock %}
 

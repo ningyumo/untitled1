@@ -28,6 +28,11 @@
     min-height: 750px;
 }
 
+.ancestor_comment {
+    border-bottom: 1px solid gray;
+    padding-bottom: 5px;
+}
+
 #comment_area {
     margin-top: 20px;
     border-top: 1px solid black;
@@ -49,7 +54,7 @@
 
 .child_comment{
     background-color: #d9d9d9;
-    text-indent: 2em;
+    text-indent: 0.5em;
 }
 
 .comment {
@@ -102,3 +107,23 @@ div#collect_blog {
     left: 15px;
 }
 
+.option_blog_btn {
+    color: red;
+}
+
+.blog_detail_profile_avatar {
+    width: 3em;
+    height: 3em;
+    margin-right: 1em;
+}
+
+#return_previous_page {
+    position: fixed;
+    top: 200px;
+    left: 15px;
+    text-decoration: none;
+}
+
+#return_previous_page a{
+    text-decoration: none;
+}

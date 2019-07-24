@@ -20,3 +20,24 @@
     top: 500px;
     left: 200px;
 }
+
+#profile_avatar {
+    cursor: pointer;
+    border: 1px solid black;
+    width: 200px;
+    height: 200px;
+}
+
+.empty {
+    text-align: center;
+    font-size: 2em;
+    padding-top: 200px;
+}
+
+.option_title {
+    font-size: 1.5em;
+    font-weight: bold;
+    border-bottom: 1px gray solid;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}

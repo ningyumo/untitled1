@@ -46,7 +46,7 @@ class CommentFormView(FormView):
                                              creater=self.request.user)
             self.data['comment_parent_creater_username'] = comment.parent_comment.creater.username
             self.data['comment_top_comment_pk'] = comment.top_comment.pk
-
+        self.data['avatar_url'] = comment.creater.profile.avatar.url
         self.data['comment_pk'] = comment.pk
         self.data['comment_creater_username'] = comment.creater.username
         self.data['comment_content'] = comment.content

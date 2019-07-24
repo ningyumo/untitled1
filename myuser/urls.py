@@ -1,7 +1,6 @@
 from django.urls import path
 from . import views
 
-
 app_name = 'accounts'
 urlpatterns = [
     path('register/', views.my_register, name='register'),  # 注册
@@ -13,4 +12,5 @@ urlpatterns = [
     path('profile/change/email/', views.change_email, name='change_email'),  # 修改邮箱
     path('profile/change/password/', views.change_password, name='change_password'),  # 修改密码
     path('find/password/', views.find_password, name='find_password'),  # 找回密码
+    path('ajax/avatar/', views.ajax_avatar_upload, name='ajax_avatar_upload'),  # 上传头像
 ]

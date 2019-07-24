@@ -1,5 +1,4 @@
 body {
-    background-color: #f5f5f5;
     /*position: relative;*/
 }
 
@@ -8,6 +7,12 @@ div#body_content {
 }
 
 div#content {
-    margin-top: 10px;
-    /*min-height: 600px;*/
+    /*margin-top: 5px;*/
+    min-height: 600px;
+}
+
+#base_html_profile_avatar {
+    margin-top: 4px;
+    width: 3em;
+    height: 3em;
 }

@@ -87,7 +87,6 @@ class LoginForm(forms.Form):
             return self.cleaned_data
 
 
-
 # 修改昵称表单
 class ChangeNickNameForm(forms.Form):
     nick_name = forms.CharField(max_length=100,
@@ -138,7 +137,7 @@ class ChangeEmailForm(forms.Form):
         return self.cleaned_data
 
 
-# 修改密码
+# 修改密码表单
 class ChangePasswordForm(forms.Form):
     old_password = forms.CharField(label='请输入旧密码',
                                    widget=forms.PasswordInput(attrs={
@@ -180,6 +179,7 @@ class ChangePasswordForm(forms.Form):
         return self.cleaned_data
 
 
+# 找回密码表单
 class FindPasswordForm(forms.Form):
     email = forms.CharField(label='请输入邮箱',
                             widget=forms.EmailInput(attrs={
@@ -227,5 +227,12 @@ class FindPasswordForm(forms.Form):
         return self.cleaned_data
 
 
+# 上传头像表单
+class AvatarUploadForm(forms.Form):
+    avatar = forms.ImageField(widget=forms.ClearableFileInput(attrs={
+        'class': "avatar-input img-thumbnail",
+        'id': "avatarInput" ,
+        'type': 'file',
+    }))
 
 
